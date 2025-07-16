@@ -27,12 +27,19 @@
  */
 
 const express = require("express");
+const cors = require("cors");
 const app = express();
 // The path to db.js is relative to server.js.
 // Since both will be in the 'backend' folder, './db' is correct.
 const db = require("./db"); // Import the database connection pool
 
 // Middleware to parse JSON request bodies
+app.use(
+  cors({
+    origin: "http://localhost:4200",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // --- Helper Functions for Validation ---
@@ -375,7 +382,14 @@ app.post("/api/movies/:id/rate", async (req, res) => {
 
 // Start the Express server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  // Print the current database name for debugging
+  try {
+    const [rows] = await db.query("SELECT DATABASE() AS db");
+    console.log(`Connected to MySQL database: ${rows[0].db}`);
+  } catch (err) {
+    console.error("Could not determine current database:", err.message);
+  }
   console.log(`Server running on port ${PORT}`);
   console.log("Movie API Endpoints:");
   console.log(`  GET /api/movies`);
