@@ -1,20 +1,19 @@
 {
-  "name": "backend",
+  "name": "movie-app-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "db.js",
+  "description": "Backend API for the Movie Management App",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
-    "express": "^5.1.0",
-    "mysql2": "^3.14.2"
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.1"
   }
 }

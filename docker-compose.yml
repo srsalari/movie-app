@@ -1,0 +1,63 @@
+services:
+  # Backend Service (Node.js/Express)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: movie-app-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    depends_on: # Wait until the DB is confirmed to be healthy
+      db:
+        condition: service_healthy
+    networks:
+      - movie-app-network
+
+  # Frontend Service (Angular/Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: movie-app-frontend
+    ports:
+      - "4200:80"
+    depends_on: # Add this to make frontend wait for the backend
+      - backend
+    networks:
+      - movie-app-network
+
+  # Database Service (MySQL)
+  db:
+    image: mysql:latest
+    container_name: movie-app-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3307:3306" # Use port 3307 on the host to avoid conflicts
+    healthcheck: # This check ensures MySQL is fully ready before other services start
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "${DB_USER}",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - movie-app-network
+
+networks:
+  movie-app-network:
+    driver: bridge
