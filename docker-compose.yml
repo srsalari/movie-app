@@ -55,6 +55,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes: # Mount the init script to seed the database
+      - ./backend/db:/docker-entrypoint-initdb.d
     networks:
       - movie-app-network
 
